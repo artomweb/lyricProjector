@@ -12,6 +12,6 @@ This was created to be projected on a wall and be able to project the lyrics at 
 
 ![Screenshot](screenshots/2.png)
 
-## Sometimes there are no lyrics
+## Sometimes there are no lyrics :(
 
 ![Screenshot](screenshots/3.png)
