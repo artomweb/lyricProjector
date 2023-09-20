@@ -1,14 +1,6 @@
 const puppeteer = require("puppeteer");
 
-const fs = require("fs");
-
-function writeTokenFS(token) {
-  try {
-    fs.writeFileSync("./spToken.txt", token, { flag: "w+" });
-  } catch (err) {
-    console.error(err);
-  }
-}
+const { writeToFile } = require("./fileHandler");
 
 async function getSP() {
   console.log("starting browser");
@@ -39,7 +31,7 @@ async function getSP() {
 
   //   console.log(sp_dc.value);
 
-  writeTokenFS(sp_dc.value);
+  writeToFile("./spToken.txt", sp_dc.value);
 }
 
 module.exports = getSP;

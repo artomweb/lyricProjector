@@ -19,7 +19,7 @@ app.use(
   })
 );
 
-const lyricsRoute = require("./lyricsRoute");
+const lyricsRoute = require("./routes/lyricsRoute");
 
 const AuthRoutes = require("./routes/authRoutes.js");
 app.use("/api", cors(), AuthRoutes);

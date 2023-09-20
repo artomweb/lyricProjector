@@ -2,22 +2,13 @@ const axios = require("axios");
 
 const renewSP = require("./spTokenRenew");
 
-const fs = require("fs");
+const { readFromFile, writeToFile } = require("./fileHandler");
 
 require("dotenv").config();
 
-function getTokenFS() {
-  try {
-    const data = fs.readFileSync("./spToken.txt", "utf8");
-    return data;
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-async function getToken() {
+async function getNewAcessToken() {
   console.log("Attempting to get token 1st time");
-  let token = getTokenFS();
+  let token = readFromFile("./spToken.txt");
   console.log("TOKEN: " + token);
   let headers = {
     Cookie: `sp_dc=${token}`,
@@ -28,13 +19,15 @@ async function getToken() {
       url: "https://open.spotify.com/get_access_token",
       headers,
     });
-    return response.data.accessToken;
+    const accessToken = response.data.accessToken;
+    writeToFile("./accessToken.txt", accessToken);
+    return accessToken;
   } catch (error) {
     console.log("Failed to get access token 1st time going to renew SP");
     await renewSP();
   }
 
-  token = getTokenFS();
+  token = readFromFile("./spToken.txt");
 
   console.log("TOKEN2: " + token);
   console.log("Attempting to get token 2nd time");
@@ -66,13 +59,17 @@ async function getLyrics(URI, token) {
         authorization: `Bearer ${token}`,
       },
     });
-    // console.log(response.data.lyrics.lines);
+    console.log(response.data);
 
-    return response.data.lyrics.lines;
+    return response.data.lyrics;
   } catch (error) {
-    // console.log(error);
-    return [];
+    console.log(error);
+    if (error.response.status === 404) {
+      return [];
+    }
+    throw "Invalid Access Token";
+    // return [];
   }
 }
 
-module.exports = { getToken, getLyrics };
+module.exports = { getNewAcessToken, getLyrics };

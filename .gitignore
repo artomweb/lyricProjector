@@ -1,3 +1,4 @@
 /node_modules/
 .env
 spToken.txt
+accessToken.txt

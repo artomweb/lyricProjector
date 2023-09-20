@@ -10,9 +10,8 @@ body {
   background: #ffffff;
   /* background: -webkit-linear-gradient(to top, #232526, #414345); */
 }
-body .player {
+.songDetails {
   z-index: 10;
-  background: #f9f9f9;
   color: #000;
   min-height: 200px;
   max-height: 200px;
@@ -26,11 +25,10 @@ body .player {
   );
   align-items: center;
   font-size: 20px;
-  /* opacity: 0.1; */
   width: 100%;
-  position: absolute;
+  position: fixed;
   padding-top: 10px;
-  /* line-height: 20px; */
+  text-align: center;
 }
 
 .songName {
@@ -74,7 +72,11 @@ body .content .lyrics > div:before {
 }
 body .content .lyrics > div.highlighted {
   color: #000000;
-  font-size: 48px;
+  /* font-size: 48px; */
+}
+
+.showOverflow {
+  overflow: visible !important;
 }
 
 @keyframes pop-in {

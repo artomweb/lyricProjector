@@ -1,4 +1,4 @@
-let current_track = "";
+let currentTrack = "";
 let currentPlaybackTime = 0;
 let lyricsIndex = 0;
 let playbackTimer;
@@ -8,6 +8,7 @@ let lyrics = [];
 let currentLyric = "";
 let songName = "";
 let artistName = "";
+let syncType = "";
 
 function align() {
   var a = $(".highlighted").height();
@@ -15,18 +16,11 @@ function align() {
   var d =
     $(".highlighted").offset().top - $(".highlighted").parent().offset().top;
   var e = d + a / 2 - c / 2;
+  console.log("e", e);
   $(".content").animate(
     { scrollTop: e + "px" },
     { easing: "swing", duration: 250 }
   );
-}
-
-function alignLyrics() {
-  if ($(".lyrics").height() != lyricHeight) {
-    //Either width changes so that a line may take up or use less vertical space or the window height changes, 2 in 1
-    lyricHeight = $(".lyrics").height();
-    align();
-  }
 }
 
 var lyricHeight = $(".lyrics").height();
@@ -38,18 +32,7 @@ $(window).on("resize", () => {
   }
 });
 
-function showLyrics() {
-  let $cont = $(".lyrics");
-  $cont.empty();
-  for (let i = 0; i < lyrics.length; i++) {
-    let $elem = $("<div></div>");
-    if (i === 0) {
-      $elem.addClass("highlighted");
-    }
-    $elem.text(lyrics[i].words);
-    $cont.append($elem);
-  }
-
+function updateSongDetails() {
   let $songDetails = $(".songDetails");
   $songDetails.empty();
 
@@ -59,10 +42,45 @@ function showLyrics() {
     .text(artistName);
 
   $songDetails.append($songNameElem).append($songArtistElem);
-  align();
+}
+
+function showLyrics() {
+  updateSongDetails();
+  let $cont = $(".lyrics");
+  $cont.empty();
+
+  if (lyrics.length === 0) {
+    console.log("lyrics length is zero");
+    let $elem = $("<div></div>");
+    $elem.addClass("highlighted");
+    $elem.text("There are no lyrics for this song");
+    $cont.append($elem);
+    $(".content").removeClass("showOverflow");
+    align();
+    return;
+  }
+
+  for (let i = 0; i < lyrics.length; i++) {
+    let $elem = $("<div></div>");
+    if (i === 0 || syncType !== "LINE_SYNCED") {
+      $elem.addClass("highlighted");
+    }
+    $elem.text(lyrics[i].words);
+    $cont.append($elem);
+  }
+
+  if (syncType === "LINE_SYNCED") {
+    $(".content").removeClass("showOverflow");
+    align();
+  } else {
+    $(".content").addClass("showOverflow");
+  }
 }
 
 function updateLyrics() {
+  if (syncType !== "LINE_SYNCED" || lyrics.length === 0) {
+    return;
+  }
   const pastLyrics = lyrics.filter(
     (lyric) => lyric.startTimeMs < currentPlaybackTime
   );
@@ -91,6 +109,14 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       cb(TOKEN);
     },
     volume: 0.5,
+  });
+
+  document.addEventListener("keyup", (event) => {
+    if (event.code === "Space") {
+      player.togglePlay().then(() => {
+        console.log("Toggled playback!");
+      });
+    }
   });
 
   // Ready
@@ -132,23 +158,28 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     });
   }
 
-  async function processStateUpdate(data) {
+  function processStateUpdate(data) {
     console.log(data);
 
     const URI = data.track_window.current_track.id;
 
-    if (URI !== current_track) {
-      // If song has changed
-      const response = await fetch("/lyrics/" + URI);
-      lyrics = await response.json();
-      console.log(lyrics);
-      current_track = URI;
-      songName = data.track_window.current_track.name;
-      artistName = data.track_window.current_track.artists[0].name;
-      showLyrics();
+    if (URI !== currentTrack) {
+      currentTrack = URI;
+      // If song has changed then fetch new lyrics
+      const response = fetch("/lyrics/" + URI)
+        .then((response) => response.json())
+        .then((rawLyrics) => {
+          lyrics = rawLyrics.lines || [];
+          syncType = rawLyrics.syncType || "LINE_SYNCED";
+          console.log("lyrics", lyrics);
+          lyrics = lyrics.filter((lyr) => lyr.words !== "");
+          songName = data.track_window.current_track.name;
+          artistName = data.track_window.current_track.artists[0].name;
+          showLyrics();
+        });
     }
 
-    currentPlaybackTime = data.position; // Updata playback time
+    currentPlaybackTime = data.position; // Update playback time
 
     const pausedVar = data.paused;
 
@@ -164,7 +195,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         isPlaying = true;
 
         playbackTimer = setInterval(updatePlaybackTime, 50);
-        currentStateTimer = setInterval(getCurrentState, 1000);
+        currentStateTimer = setInterval(getCurrentState, 2000);
       }
     }
 
