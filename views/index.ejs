@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lyric Projector</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+      integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body>
+    <!-- <h1>Lyric Projector</h1> -->
+
+    <% if (token) { %>
+
+    <!-- <button id="togglePlay">Toggle Play</button> -->
+    <div class="songDetails player"></div>
+    <div class="content">
+      <div class="lyrics"></div>
+    </div>
+
+    <!-- <img id="albumArt" /> -->
+
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script>
+      let TOKEN = "<%- token %>";
+    </script>
+    <script src="/js/index.js"></script>
+
+    <% } else{%>
+    <a href="/api/login">Login</a>
+    <% } %>
+  </body>
+</html>

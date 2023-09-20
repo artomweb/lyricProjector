@@ -1,0 +1,88 @@
+body {
+  font-family: "Montserrat", sans-serif;
+  min-height: 100vh;
+  max-height: 100vh;
+  margin: 0;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  /* background: #222222; */
+  background: #ffffff;
+  /* background: -webkit-linear-gradient(to top, #232526, #414345); */
+}
+body .player {
+  z-index: 10;
+  background: #f9f9f9;
+  color: #000;
+  min-height: 200px;
+  max-height: 200px;
+  display: flex;
+  flex-direction: column;
+  background: rgb(255, 255, 255);
+  background: linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgb(255 255 255 / 85%) 74%
+  );
+  align-items: center;
+  font-size: 20px;
+  /* opacity: 0.1; */
+  width: 100%;
+  position: absolute;
+  padding-top: 10px;
+  /* line-height: 20px; */
+}
+
+.songName {
+  font-size: 40px;
+}
+
+body a {
+  color: inherit;
+}
+body a:not(:hover) {
+  text-decoration: none;
+}
+body .content {
+  overflow: hidden;
+  flex-grow: 1;
+  height: calc(100% - 80px);
+}
+body .content .lyrics {
+  padding: 50vh 0;
+  min-height: calc(100vh - 80px);
+  width: calc(100% - 40px);
+  margin: 0 20px;
+  text-align: center;
+  transition: all 0.25s;
+  position: relative;
+}
+body .content .lyrics > div {
+  position: relative;
+  font-size: 40px;
+  line-height: 80px;
+  color: #a8a8a8;
+  transition: all 0.25s;
+}
+body .content .lyrics > div:before {
+  content: attr(note);
+  position: absolute;
+  top: 0px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+}
+body .content .lyrics > div.highlighted {
+  color: #000000;
+  font-size: 48px;
+}
+
+@keyframes pop-in {
+  0%,
+  95% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+} /*# sourceMappingURL=main.css.map */
